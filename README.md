@@ -17,6 +17,8 @@ int main() {
         std::cout << s << std::endl;
         std::cout << res.reading[s] << std::endl;
         std::cout << res.pos[s] << std::endl;
+        std::cout << res.baseform[s] << std::endl;
+        std::cout << res.feature[s] << std::endl;
     }
     return 0;
 }
