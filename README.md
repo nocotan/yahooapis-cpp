@@ -5,7 +5,7 @@ C/C++ Yahoo API Wrapper
 
 Yahoo形態素解析
 ```
-#include "./include/yapis_cpp.hpp"
+#include "yapis_cpp.hpp"
 #include <iostream>
 
 int main() {
