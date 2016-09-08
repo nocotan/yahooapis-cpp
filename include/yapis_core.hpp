@@ -1,6 +1,7 @@
 #ifndef YAPIS_CORE_HPP
 #define YAPIS_CORE_HPP
 
+#include <iostream>
 #include <string>
 #include <curl/curl.h>
 
@@ -19,6 +20,7 @@ class YAPIsCore
     public:
         YAPIsCore(std::string);
         const std::string get_maservice_url() const;
+        std::string get_appid() const;
 };
 
 #endif

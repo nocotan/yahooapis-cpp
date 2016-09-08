@@ -16,3 +16,8 @@ const std::string YAPIsCore::get_maservice_url() const
 {
     return this->MASERVICE_URL;
 }
+
+std::string YAPIsCore::get_appid() const
+{
+    return this->APP_ID;
+}
