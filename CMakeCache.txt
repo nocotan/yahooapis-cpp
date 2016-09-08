@@ -171,6 +171,9 @@ Project_BINARY_DIR:STATIC=/home/noco/workspace/yahooapis-cpp
 //Value Computed by CMake
 Project_SOURCE_DIR:STATIC=/home/noco/workspace/yahooapis-cpp
 
+//Dependencies for target
+curl_LIB_DEPENDS:STATIC=
+
 
 ########################
 # INTERNAL cache entries

@@ -11,3 +11,8 @@ const std::string YAPIsCore::KEYPHRASESERVICE_URL = "http://jlp.yahooapis.jp/Key
 YAPIsCore::YAPIsCore(std::string APP_ID) : APP_ID(APP_ID)
 {
 }
+
+const std::string YAPIsCore::get_maservice_url() const
+{
+    return this->MASERVICE_URL;
+}

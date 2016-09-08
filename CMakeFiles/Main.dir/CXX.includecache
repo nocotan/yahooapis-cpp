@@ -9,6 +9,8 @@
 /home/noco/workspace/yahooapis-cpp/./include/./yapis_core.hpp
 string
 -
+curl/curl.h
+-
 
 /home/noco/workspace/yahooapis-cpp/./include/yapis_cpp.hpp
 ./yapis_core.hpp
@@ -17,9 +19,13 @@ string
 /home/noco/workspace/yahooapis-cpp/include/./yapis_core.hpp
 string
 -
+curl/curl.h
+-
 
 /home/noco/workspace/yahooapis-cpp/include/yapis_core.hpp
 string
+-
+curl/curl.h
 -
 
 /home/noco/workspace/yahooapis-cpp/include/yapis_cpp.hpp
@@ -29,6 +35,8 @@ string
 /home/noco/workspace/yahooapis-cpp/main.cpp
 ./include/yapis_cpp.hpp
 /home/noco/workspace/yahooapis-cpp/./include/yapis_cpp.hpp
+iostream
+-
 
 /home/noco/workspace/yahooapis-cpp/src/yapis_core.cpp
 ../include/yapis_core.hpp

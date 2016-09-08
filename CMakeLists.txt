@@ -6,3 +6,4 @@ add_executable(Main
     main.cpp
     src/yapis_cpp.cpp
     src/yapis_core.cpp)
+target_link_libraries(Main PRIVATE "-lcurl")
