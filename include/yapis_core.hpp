@@ -2,8 +2,13 @@
 #define YAPIS_CORE_HPP
 
 #include <iostream>
+#include <map>
 #include <string>
+#include <vector>
+
 #include <curl/curl.h>
+
+#include "tinyxml2.h"
 
 
 class YAPIsCore

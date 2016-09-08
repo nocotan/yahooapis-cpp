@@ -9,8 +9,20 @@ class YAPIsCpp : public YAPIsCore
     private:
     public:
         YAPIsCpp(std::string);
+
+        // libcurlのコールバック関数
         static size_t callbackWrite(char*, size_t, size_t, std::string*);
-        std::string ma_result(std::string) const;
+
+        // 形態素解析の結果
+        struct MAResult {
+            int total_count;
+            int filtered_count;
+            std::vector<std::string> word_list;
+            std::map<std::string, std::string> reading;
+            std::map<std::string, std::string> pos;
+        };
+
+        MAResult ma_post(std::string) const;
 };
 
 #endif

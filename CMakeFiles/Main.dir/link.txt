@@ -1,1 +1,1 @@
-/usr/bin/c++   -std=c++14   CMakeFiles/Main.dir/main.cpp.o CMakeFiles/Main.dir/src/yapis_cpp.cpp.o CMakeFiles/Main.dir/src/yapis_core.cpp.o  -o Main -rdynamic -lcurl 
+/usr/bin/c++   -std=c++14   CMakeFiles/Main.dir/main.cpp.o CMakeFiles/Main.dir/src/yapis_cpp.cpp.o CMakeFiles/Main.dir/src/yapis_core.cpp.o CMakeFiles/Main.dir/src/tinyxml2.cpp.o  -o Main -rdynamic -lcurl 

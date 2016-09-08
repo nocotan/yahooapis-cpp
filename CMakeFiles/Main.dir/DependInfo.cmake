@@ -5,6 +5,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/noco/workspace/yahooapis-cpp/main.cpp" "/home/noco/workspace/yahooapis-cpp/CMakeFiles/Main.dir/main.cpp.o"
+  "/home/noco/workspace/yahooapis-cpp/src/tinyxml2.cpp" "/home/noco/workspace/yahooapis-cpp/CMakeFiles/Main.dir/src/tinyxml2.cpp.o"
   "/home/noco/workspace/yahooapis-cpp/src/yapis_core.cpp" "/home/noco/workspace/yahooapis-cpp/CMakeFiles/Main.dir/src/yapis_core.cpp.o"
   "/home/noco/workspace/yahooapis-cpp/src/yapis_cpp.cpp" "/home/noco/workspace/yahooapis-cpp/CMakeFiles/Main.dir/src/yapis_cpp.cpp.o"
   )

@@ -3,7 +3,13 @@
 
 int main() {
     YAPIsCpp yapis = YAPIsCpp("dj0zaiZpPURWbUpWY1RmbnU3NyZzPWNvbnN1bWVyc2VjcmV0Jng9ZDg-");
-    std::string s = yapis.ma_result("test");
-    std::cout << s << std::endl;
+    YAPIsCpp::MAResult res = yapis.ma_post("庭には二羽鶏がいる庭");
+    std::cout << res.total_count << std::endl;
+    std::cout << res.filtered_count << std::endl;
+    for (std::string s : res.word_list) {
+        std::cout << s << std::endl;
+        std::cout << res.reading[s] << std::endl;
+        std::cout << res.pos[s] << std::endl;
+    }
     return 0;
 }

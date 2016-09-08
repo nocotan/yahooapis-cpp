@@ -153,6 +153,33 @@ main.cpp.s:
 	$(MAKE) -f CMakeFiles/Main.dir/build.make CMakeFiles/Main.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+src/tinyxml2.o: src/tinyxml2.cpp.o
+
+.PHONY : src/tinyxml2.o
+
+# target to build an object file
+src/tinyxml2.cpp.o:
+	$(MAKE) -f CMakeFiles/Main.dir/build.make CMakeFiles/Main.dir/src/tinyxml2.cpp.o
+.PHONY : src/tinyxml2.cpp.o
+
+src/tinyxml2.i: src/tinyxml2.cpp.i
+
+.PHONY : src/tinyxml2.i
+
+# target to preprocess a source file
+src/tinyxml2.cpp.i:
+	$(MAKE) -f CMakeFiles/Main.dir/build.make CMakeFiles/Main.dir/src/tinyxml2.cpp.i
+.PHONY : src/tinyxml2.cpp.i
+
+src/tinyxml2.s: src/tinyxml2.cpp.s
+
+.PHONY : src/tinyxml2.s
+
+# target to generate assembly for a file
+src/tinyxml2.cpp.s:
+	$(MAKE) -f CMakeFiles/Main.dir/build.make CMakeFiles/Main.dir/src/tinyxml2.cpp.s
+.PHONY : src/tinyxml2.cpp.s
+
 src/yapis_core.o: src/yapis_core.cpp.o
 
 .PHONY : src/yapis_core.o
@@ -219,6 +246,9 @@ help:
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... src/tinyxml2.o"
+	@echo "... src/tinyxml2.i"
+	@echo "... src/tinyxml2.s"
 	@echo "... src/yapis_core.o"
 	@echo "... src/yapis_core.i"
 	@echo "... src/yapis_core.s"

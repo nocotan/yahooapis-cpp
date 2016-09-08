@@ -5,5 +5,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 add_executable(Main
     main.cpp
     src/yapis_cpp.cpp
-    src/yapis_core.cpp)
+    src/yapis_core.cpp
+    src/tinyxml2.cpp)
 target_link_libraries(Main PRIVATE "-lcurl")
