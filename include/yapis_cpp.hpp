@@ -13,6 +13,9 @@ class YAPIsCpp : public YAPIsCore
         // libcurlのコールバック関数
         static size_t callbackWrite(char*, size_t, size_t, std::string*);
 
+        // libcurlセットアップ関数
+        std::string common_curl_setup(CURL*, std::string, int) const;
+
         // 形態素解析の結果
         struct MAResult {
             int total_count;
@@ -24,7 +27,14 @@ class YAPIsCpp : public YAPIsCore
             std::map<std::string, std::string> feature;
         };
 
+        // かな漢字変換の結果
+        struct JIMResult {
+            std::vector<std::string> segment_list;
+            std::map<std::string, std::vector<std::string> > candidate_list;
+        };
+
         MAResult ma_post(std::string) const;
+        JIMResult jim_post(std::string) const;
 };
 
 #endif

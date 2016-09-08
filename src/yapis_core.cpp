@@ -17,6 +17,31 @@ const std::string YAPIsCore::get_maservice_url() const
     return this->MASERVICE_URL;
 }
 
+const std::string YAPIsCore::get_jimservice_url() const
+{
+    return this->JIMSERVICE_URL;
+}
+
+const std::string YAPIsCore::get_furiganaservice_url() const
+{
+    return this->FURIGANASERVICE_URL;
+}
+
+const std::string YAPIsCore::get_kouseiservice_url() const
+{
+    return this->KOUSEISERVICE_URL;
+}
+
+const std::string YAPIsCore::get_daservice_url() const
+{
+    return this->DASERVICE_URL;
+}
+
+const std::string YAPIsCore::get_keyphraseservice_url() const
+{
+    return this->KEYPHRASESERVICE_URL;
+}
+
 std::string YAPIsCore::get_appid() const
 {
     return this->APP_ID;

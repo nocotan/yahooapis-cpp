@@ -11,26 +11,20 @@ size_t YAPIsCpp::callbackWrite(char *ptr, size_t size, size_t nmemb, std::string
     return data_length;
 }
 
-YAPIsCpp::MAResult YAPIsCpp::ma_post(std::string sentence) const
+std::string YAPIsCpp::common_curl_setup(CURL *curl, std::string sentence, int type) const
 {
-    using namespace tinyxml2;
-
-    CURL *curl;
-    CURLcode res;
+    std::string url;
+    std::string post_data;
     std::string chunk;
-    YAPIsCpp::MAResult result;
-
-    curl_global_init(CURL_GLOBAL_ALL);
-
-    curl = curl_easy_init();
-    if (curl) {
-        std::string url = YAPIsCore::get_maservice_url();
-        std::string post_data = "appid="
+    CURLcode res;
+    if (type==0) {
+        url = YAPIsCore::get_maservice_url();
+        post_data = "appid="
             + YAPIsCore::get_appid()
             + "&results=ma&response=surface,reading,pos,baseform,feature&sentence="
             + sentence;
-
-        // libcurlセットアップ
+    }
+    if (curl) {
         curl_easy_setopt(curl, CURLOPT_URL, (char*)url.c_str());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, (char*)post_data.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callbackWrite);
@@ -42,6 +36,21 @@ YAPIsCpp::MAResult YAPIsCpp::ma_post(std::string sentence) const
 
         curl_easy_cleanup(curl);
     }
+
+    return chunk;
+}
+
+YAPIsCpp::MAResult YAPIsCpp::ma_post(std::string sentence) const
+{
+    using namespace tinyxml2;
+
+    CURL *curl;
+    YAPIsCpp::MAResult result;
+
+    curl_global_init(CURL_GLOBAL_ALL);
+
+    curl = curl_easy_init();
+    std::string chunk = this->common_curl_setup(curl, sentence, 0);
 
     curl_global_cleanup();
 
@@ -75,6 +84,16 @@ YAPIsCpp::MAResult YAPIsCpp::ma_post(std::string sentence) const
 
     result.total_count = std::stoi(total_count->GetText());
     result.filtered_count = std::stoi(filtered_count->GetText());
+
+    return result;
+}
+
+YAPIsCpp::JIMResult YAPIsCpp::jim_post(std::string sentence) const
+{
+    using namespace tinyxml2;
+
+    CURL *curl;
+    YAPIsCpp::JIMResult result;
 
     return result;
 }
