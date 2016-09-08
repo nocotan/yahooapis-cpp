@@ -20,6 +20,8 @@ class YAPIsCpp : public YAPIsCore
             std::vector<std::string> word_list;
             std::map<std::string, std::string> reading;
             std::map<std::string, std::string> pos;
+            std::map<std::string, std::string> baseform;
+            std::map<std::string, std::string> feature;
         };
 
         MAResult ma_post(std::string) const;

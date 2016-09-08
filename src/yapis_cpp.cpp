@@ -27,7 +27,7 @@ YAPIsCpp::MAResult YAPIsCpp::ma_post(std::string sentence) const
         std::string url = YAPIsCore::get_maservice_url();
         std::string post_data = "appid="
             + YAPIsCore::get_appid()
-            + "&results=ma&sentence="
+            + "&results=ma&response=surface,reading,pos,baseform,feature&sentence="
             + sentence;
 
         // libcurlセットアップ
@@ -60,10 +60,17 @@ YAPIsCpp::MAResult YAPIsCpp::ma_post(std::string sentence) const
         XMLElement* surface = el->FirstChildElement("surface");
         XMLElement* reading = el->FirstChildElement("reading");
         XMLElement* pos = el->FirstChildElement("pos");
+        XMLElement* baseform = el->FirstChildElement("baseform");
+        XMLElement* feature = el->FirstChildElement("feature");
 
         result.word_list.push_back(surface->GetText());
         result.reading.insert(std::make_pair(surface->GetText(), reading->GetText()));
         result.pos.insert(std::make_pair(surface->GetText(), pos->GetText()));
+
+        if (baseform != NULL)
+            result.baseform.insert(std::make_pair(surface->GetText(), baseform->GetText()));
+        if (feature != NULL)
+            result.feature.insert(std::make_pair(surface->GetText(), feature->GetText()));
     }
 
     result.total_count = std::stoi(total_count->GetText());
