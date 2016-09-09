@@ -24,6 +24,13 @@ std::string YAPIsCpp::common_curl_setup(CURL *curl, std::string sentence, int ty
             + "&results=ma&response=surface,reading,pos,baseform,feature&sentence="
             + sentence;
     }
+    else if (type==1) {
+        url = YAPIsCore::get_jimservice_url();
+        post_data = "appid="
+            + YAPIsCore::get_appid()
+            + "&sentence="
+            + sentence;
+    }
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_URL, (char*)url.c_str());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, (char*)post_data.c_str());
@@ -58,19 +65,19 @@ YAPIsCpp::MAResult YAPIsCpp::ma_post(std::string sentence) const
     XMLDocument doc;
     doc.Parse((const char*)chunk.c_str());
 
-    XMLElement* ResultSet = doc.FirstChildElement("ResultSet");
-    XMLElement* ma_result = ResultSet->FirstChildElement("ma_result");
-    XMLElement* total_count = ma_result->FirstChildElement("total_count");
-    XMLElement* filtered_count = ma_result->FirstChildElement("filtered_count");
-    XMLElement* word_list = ma_result->FirstChildElement("word_list");
+    auto ResultSet = doc.FirstChildElement("ResultSet");
+    auto ma_result = ResultSet->FirstChildElement("ma_result");
+    auto total_count = ma_result->FirstChildElement("total_count");
+    auto filtered_count = ma_result->FirstChildElement("filtered_count");
+    auto word_list = ma_result->FirstChildElement("word_list");
 
-    for (XMLElement* el=word_list->FirstChildElement("word");
+    for (auto el=word_list->FirstChildElement("word");
             el!=NULL; el=el->NextSiblingElement("word")) {
-        XMLElement* surface = el->FirstChildElement("surface");
-        XMLElement* reading = el->FirstChildElement("reading");
-        XMLElement* pos = el->FirstChildElement("pos");
-        XMLElement* baseform = el->FirstChildElement("baseform");
-        XMLElement* feature = el->FirstChildElement("feature");
+        auto surface = el->FirstChildElement("surface");
+        auto reading = el->FirstChildElement("reading");
+        auto pos = el->FirstChildElement("pos");
+        auto baseform = el->FirstChildElement("baseform");
+        auto feature = el->FirstChildElement("feature");
 
         result.word_list.push_back(surface->GetText());
         result.reading.insert(std::make_pair(surface->GetText(), reading->GetText()));
@@ -94,6 +101,19 @@ YAPIsCpp::JIMResult YAPIsCpp::jim_post(std::string sentence) const
 
     CURL *curl;
     YAPIsCpp::JIMResult result;
+
+    curl_global_init(CURL_GLOBAL_ALL);
+
+    curl = curl_easy_init();
+    std::string chunk = this->common_curl_setup(curl, sentence, 1);
+
+    curl_global_cleanup();
+
+    // xmlパース処理
+    XMLDocument doc;
+    doc.Parse((const char*)chunk.c_str());
+
+    doc.Print();
 
     return result;
 }

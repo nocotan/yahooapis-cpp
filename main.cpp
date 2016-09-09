@@ -13,5 +13,7 @@ int main() {
         std::cout << res.baseform[s] << std::endl;
         std::cout << res.feature[s] << std::endl;
     }
+
+    YAPIsCpp::JIMResult res2 = yapis.jim_post("おなかがすいた");
     return 0;
 }
