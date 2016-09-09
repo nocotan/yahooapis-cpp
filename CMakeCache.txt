@@ -114,7 +114,7 @@ CMAKE_OBJCOPY:FILEPATH=/usr/bin/objcopy
 CMAKE_OBJDUMP:FILEPATH=/usr/bin/objdump
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=Project
+CMAKE_PROJECT_NAME:STATIC=Yahooapis-cpp
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/usr/bin/ranlib
@@ -170,6 +170,12 @@ Project_BINARY_DIR:STATIC=/home/noco/workspace/yahooapis-cpp
 
 //Value Computed by CMake
 Project_SOURCE_DIR:STATIC=/home/noco/workspace/yahooapis-cpp
+
+//Value Computed by CMake
+Yahooapis-cpp_BINARY_DIR:STATIC=/home/noco/workspace/yahooapis-cpp
+
+//Value Computed by CMake
+Yahooapis-cpp_SOURCE_DIR:STATIC=/home/noco/workspace/yahooapis-cpp
 
 //Dependencies for target
 curl_LIB_DEPENDS:STATIC=
