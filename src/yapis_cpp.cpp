@@ -1,5 +1,7 @@
 #include "../include/yapis_cpp.hpp"
 
+#define XML_FOR(x,a,b) for(auto&& (x)=YAPIsCpp::get_element((a),(b));(x)!=NULL;(x)=YAPIsCpp::get_next((x),(b)))
+
 YAPIsCpp::YAPIsCpp(std::string APP_ID) : YAPIsCore(APP_ID)
 {
 }
@@ -13,9 +15,11 @@ size_t YAPIsCpp::callbackWrite(char *ptr, size_t size, size_t nmemb, std::string
 
 std::string YAPIsCpp::common_curl_setup(CURL *curl, std::string sentence, int type) const
 {
-    std::string url;
-    std::string post_data;
-    std::string chunk;
+    using namespace std;
+
+    string url;
+    string post_data;
+    string chunk;
     CURLcode res;
 
     /**
@@ -49,14 +53,14 @@ std::string YAPIsCpp::common_curl_setup(CURL *curl, std::string sentence, int ty
 
     // curlセットアップ
     if (curl) {
-        curl_easy_setopt(curl, CURLOPT_URL, (char*)url.c_str());
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, (char*)post_data.c_str());
+        curl_easy_setopt(curl, CURLOPT_URL, (const char*)url.c_str());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, (const char*)post_data.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callbackWrite);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &chunk);
 
         res = curl_easy_perform(curl);
         if (res != CURLE_OK)
-            std::cerr << "curl_easy_perform() failed" << std::endl;
+            cerr << "curl_easy_perform() failed" << endl;
 
         curl_easy_cleanup(curl);
     }
@@ -64,17 +68,31 @@ std::string YAPIsCpp::common_curl_setup(CURL *curl, std::string sentence, int ty
     return chunk;
 }
 
+tinyxml2::XMLElement* YAPIsCpp::get_element(tinyxml2::XMLElement* current, std::string el) const
+{
+    return current->FirstChildElement((const char*)el.c_str());
+}
+
+tinyxml2::XMLElement* YAPIsCpp::get_next(tinyxml2::XMLElement* current, std::string el) const
+{
+    return current->NextSiblingElement((const char*)el.c_str());
+}
+/**
+ * 形態素解析結果
+ * @param std::string
+ */
 YAPIsCpp::MAResult YAPIsCpp::ma_post(std::string sentence) const
 {
     using namespace tinyxml2;
+    using namespace std;
 
     CURL *curl;
-    YAPIsCpp::MAResult result;
+    MAResult result;
 
     curl_global_init(CURL_GLOBAL_ALL);
 
     curl = curl_easy_init();
-    std::string chunk = this->common_curl_setup(curl, sentence, 0);
+    string chunk = common_curl_setup(curl, sentence, 0);
 
     curl_global_cleanup();
 
@@ -82,47 +100,51 @@ YAPIsCpp::MAResult YAPIsCpp::ma_post(std::string sentence) const
     XMLDocument doc;
     doc.Parse((const char*)chunk.c_str());
 
-    auto ResultSet = doc.FirstChildElement("ResultSet");
-    auto ma_result = ResultSet->FirstChildElement("ma_result");
-    auto total_count = ma_result->FirstChildElement("total_count");
-    auto filtered_count = ma_result->FirstChildElement("filtered_count");
-    auto word_list = ma_result->FirstChildElement("word_list");
+    auto&& ResultSet = doc.FirstChildElement("ResultSet");
+    auto&& ma_result = get_element(ResultSet, "ma_result");
+    auto&& total_count = get_element(ma_result, "total_count");
+    auto&& filtered_count = get_element(ma_result, "filtered_count");
+    auto&& word_list = get_element(ma_result, "word_list");
 
-    for (auto el=word_list->FirstChildElement("word");
-            el!=NULL; el=el->NextSiblingElement("word")) {
-        auto surface = el->FirstChildElement("surface");
-        auto reading = el->FirstChildElement("reading");
-        auto pos = el->FirstChildElement("pos");
-        auto baseform = el->FirstChildElement("baseform");
-        auto feature = el->FirstChildElement("feature");
+    XML_FOR(word, word_list, "word") {
+        auto&& surface = get_element(word, "surface");
+        auto&& reading = get_element(word, "reading");
+        auto&& pos = get_element(word, "pos");
+        auto&& baseform = get_element(word, "baseform");
+        auto&& feature = get_element(word, "feature");
 
         result.word_list.push_back(surface->GetText());
-        result.reading.insert(std::make_pair(surface->GetText(), reading->GetText()));
-        result.pos.insert(std::make_pair(surface->GetText(), pos->GetText()));
+        result.reading.insert(make_pair(surface->GetText(), reading->GetText()));
+        result.pos.insert(make_pair(surface->GetText(), pos->GetText()));
 
         if (baseform != NULL)
-            result.baseform.insert(std::make_pair(surface->GetText(), baseform->GetText()));
+            result.baseform.insert(make_pair(surface->GetText(), baseform->GetText()));
         if (feature != NULL)
-            result.feature.insert(std::make_pair(surface->GetText(), feature->GetText()));
+            result.feature.insert(make_pair(surface->GetText(), feature->GetText()));
     }
 
-    result.total_count = std::stoi(total_count->GetText());
-    result.filtered_count = std::stoi(filtered_count->GetText());
+    result.total_count = stoi(total_count->GetText());
+    result.filtered_count = stoi(filtered_count->GetText());
 
     return result;
 }
 
+/**
+ * かな漢字変換結果
+ * @param std::string
+ */
 YAPIsCpp::JIMResult YAPIsCpp::jim_post(std::string sentence) const
 {
     using namespace tinyxml2;
+    using namespace std;
 
     CURL *curl;
-    YAPIsCpp::JIMResult result;
+    JIMResult result;
 
     curl_global_init(CURL_GLOBAL_ALL);
 
     curl = curl_easy_init();
-    std::string chunk = this->common_curl_setup(curl, sentence, 1);
+    string chunk = common_curl_setup(curl, sentence, 1);
 
     curl_global_cleanup();
 
@@ -130,38 +152,43 @@ YAPIsCpp::JIMResult YAPIsCpp::jim_post(std::string sentence) const
     XMLDocument doc;
     doc.Parse((const char*)chunk.c_str());
 
-    auto ResultSet = doc.FirstChildElement("ResultSet");
-    auto Result = ResultSet->FirstChildElement("Result");
-    auto SegmentList = Result->FirstChildElement("SegmentList");
+    auto&& ResultSet = doc.FirstChildElement("ResultSet");
+    auto&& Result = get_element(ResultSet, "Result");
+    auto&& SegmentList = get_element(Result, "SegmentList");
 
-    for (auto el=SegmentList->FirstChildElement("Segment");
-            el!=NULL; el=el->NextSiblingElement("Segment")) {
-        auto SegmentText = el->FirstChildElement("SegmentText");
+    XML_FOR(Segment, SegmentList, "Segment") {
+        auto&& SegmentText = get_element(Segment, "SegmentText");
         result.segment_list.push_back(SegmentText->GetText());
 
-        auto CandidateList = el->FirstChildElement("CandidateList");
-        std::vector<std::string> candidate_list;
-        for (auto Candidate=CandidateList->FirstChildElement("Candidate");
-                Candidate!=NULL; Candidate=Candidate->NextSiblingElement("Candidate")) {
+        auto&& CandidateList = get_element(Segment, "CandidateList");
+        vector<string> candidate_list;
+        for (auto&& Candidate=get_element(CandidateList, "Candidate");
+                Candidate!=NULL; Candidate=get_next(Candidate, "Candidate")) {
+
             candidate_list.push_back(Candidate->GetText());
         }
-        result.candidate_list.insert(std::make_pair(SegmentText->GetText(), candidate_list));
+        result.candidate_list.insert(make_pair(SegmentText->GetText(), candidate_list));
     }
 
     return result;
 }
 
+/**
+ * ルビ振り結果
+ * @param std::string
+ */
 YAPIsCpp::FuriganaResult YAPIsCpp::furigana_post(std::string sentence) const
 {
     using namespace tinyxml2;
+    using namespace std;
 
     CURL *curl;
-    YAPIsCpp::FuriganaResult result;
+    FuriganaResult result;
 
     curl_global_init(CURL_GLOBAL_ALL);
 
     curl = curl_easy_init();
-    std::string chunk = this->common_curl_setup(curl, sentence, 2);
+    string chunk = common_curl_setup(curl, sentence, 2);
 
     curl_global_cleanup();
 
@@ -169,37 +196,36 @@ YAPIsCpp::FuriganaResult YAPIsCpp::furigana_post(std::string sentence) const
     XMLDocument doc;
     doc.Parse((const char*)chunk.c_str());
 
-    auto ResultSet = doc.FirstChildElement("ResultSet");
-    auto Result = ResultSet->FirstChildElement("Result");
-    auto WordList = Result->FirstChildElement("WordList");
+    auto&& ResultSet = doc.FirstChildElement("ResultSet");
+    auto&& Result = get_element(ResultSet, "Result");
+    auto&& WordList = get_element(Result, "WordList");
 
-    for (auto el=WordList->FirstChildElement("Word");
-            el!=NULL; el=el->NextSiblingElement("Word")) {
-        auto Surface = el->FirstChildElement("Surface");
+    XML_FOR(Word, WordList, "Word") {
+        auto&& Surface = get_element(Word, "Surface");
         result.word_list.push_back(Surface->GetText());
 
-        auto Furigana = el->FirstChildElement("Furigana");
+        auto&& Furigana = get_element(Word, "Furigana");
         if (Furigana!=NULL)
-            result.furigana_list.insert(std::make_pair(Surface->GetText(), Furigana->GetText()));
+            result.furigana_list.insert(make_pair(Surface->GetText(), Furigana->GetText()));
 
-        auto Roman = el->FirstChildElement("Roman");
+        auto&& Roman = get_element(Word, "Roman");
         if (Roman!=NULL)
-            result.roman_list.insert(std::make_pair(Surface->GetText(), Roman->GetText()));
+            result.roman_list.insert(make_pair(Surface->GetText(), Roman->GetText()));
 
-        auto SubWordList = el->FirstChildElement("SubWordList");
+        auto&& SubWordList = get_element(Word, "SubWordList");
         if (SubWordList!=NULL) {
-            for (auto SubWord=SubWordList->FirstChildElement("SubWord");
-                    SubWord!=NULL; SubWord=SubWord->NextSiblingElement("SubWord")) {
-                auto Surface = el->FirstChildElement("Surface");
+            for (auto&& SubWord=get_element(SubWordList, "SubWord");
+                    SubWord!=NULL; SubWord=get_next(SubWord, "SubWord")) {
+                auto&& Surface = get_element(SubWord, "Surface");
                 result.subword_list.push_back(Surface->GetText());
 
-                auto Furigana = el->FirstChildElement("Furigana");
+                auto&& Furigana = get_element(SubWord, "Furigana");
                 if (Furigana!=NULL)
                     result.furigana_list.insert(std::make_pair(Surface->GetText(), Furigana->GetText()));
 
-                auto Roman = el->FirstChildElement("Roman");
+                auto&& Roman = get_element(SubWord, "Roman");
                 if (Roman!=NULL)
-                    result.roman_list.insert(std::make_pair(Surface->GetText(), Roman->GetText()));
+                    result.roman_list.insert(make_pair(Surface->GetText(), Roman->GetText()));
             }
         }
     }

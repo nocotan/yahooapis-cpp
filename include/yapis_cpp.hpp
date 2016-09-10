@@ -16,6 +16,12 @@ class YAPIsCpp : public YAPIsCore
         // libcurlセットアップ関数
         std::string common_curl_setup(CURL*, std::string, int) const;
 
+        // xmlエレメントのゲッタ
+        tinyxml2::XMLElement* get_element(tinyxml2::XMLElement*, std::string) const;
+
+        // Nextxmlエレメントのゲッタ
+        tinyxml2::XMLElement* get_next(tinyxml2::XMLElement*, std::string) const;
+
         // 形態素解析の結果
         struct MAResult {
             int total_count;
@@ -41,6 +47,13 @@ class YAPIsCpp : public YAPIsCore
             std::map<std::string, std::string> roman_list;
         };
 
+        struct KouseiResult {
+            std::vector<int> StartPos;
+        };
+
+        /**
+         * 各APIの呼び出し関数
+         */
         MAResult ma_post(std::string) const;
         JIMResult jim_post(std::string) const;
         FuriganaResult furigana_post(std::string) const;
