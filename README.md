@@ -3,7 +3,7 @@ C/C++ Yahoo API Wrapper
 
 ##Usage
 
-Yahoo形態素解析
+###Yahoo形態素解析
 
 ```
 #include "yapis_cpp.hpp"
@@ -24,7 +24,7 @@ int main() {
 }
 ```
 
-Yahooかな漢字変換
+###Yahooかな漢字変換
 
 ```
 #include "yapis_cpp.hpp"
@@ -42,7 +42,7 @@ int main() {
 }
 ```
 
-ルビ振り
+###ルビ振り
 
 ```
 #include "yapis_cpp.hpp"
@@ -59,7 +59,7 @@ int main() {
 }
 ```
 
-校正支援
+###校正支援
 
 ```
 #include "yapis_cpp.hpp"
