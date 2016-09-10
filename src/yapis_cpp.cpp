@@ -17,6 +17,13 @@ std::string YAPIsCpp::common_curl_setup(CURL *curl, std::string sentence, int ty
     std::string post_data;
     std::string chunk;
     CURLcode res;
+
+    /**
+     * type:
+     * 0 => 形態素解析
+     * 1 => ひらがな漢字変換
+     * 2 => ルビ振り
+     */
     if (type==0) {
         url = YAPIsCore::get_maservice_url();
         post_data = "appid="
@@ -31,6 +38,16 @@ std::string YAPIsCpp::common_curl_setup(CURL *curl, std::string sentence, int ty
             + "&sentence="
             + sentence;
     }
+    else if (type==2) {
+        url = YAPIsCore::get_furiganaservice_url();
+        post_data = "appid="
+            + YAPIsCore::get_appid()
+            + "&grade=1"
+            + "&sentence="
+            + sentence;
+    }
+
+    // curlセットアップ
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_URL, (char*)url.c_str());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, (char*)post_data.c_str());
@@ -117,7 +134,6 @@ YAPIsCpp::JIMResult YAPIsCpp::jim_post(std::string sentence) const
     auto Result = ResultSet->FirstChildElement("Result");
     auto SegmentList = Result->FirstChildElement("SegmentList");
 
-
     for (auto el=SegmentList->FirstChildElement("Segment");
             el!=NULL; el=el->NextSiblingElement("Segment")) {
         auto SegmentText = el->FirstChildElement("SegmentText");
@@ -130,6 +146,62 @@ YAPIsCpp::JIMResult YAPIsCpp::jim_post(std::string sentence) const
             candidate_list.push_back(Candidate->GetText());
         }
         result.candidate_list.insert(std::make_pair(SegmentText->GetText(), candidate_list));
+    }
+
+    return result;
+}
+
+YAPIsCpp::FuriganaResult YAPIsCpp::furigana_post(std::string sentence) const
+{
+    using namespace tinyxml2;
+
+    CURL *curl;
+    YAPIsCpp::FuriganaResult result;
+
+    curl_global_init(CURL_GLOBAL_ALL);
+
+    curl = curl_easy_init();
+    std::string chunk = this->common_curl_setup(curl, sentence, 2);
+
+    curl_global_cleanup();
+
+    // xmlパース処理
+    XMLDocument doc;
+    doc.Parse((const char*)chunk.c_str());
+
+    auto ResultSet = doc.FirstChildElement("ResultSet");
+    auto Result = ResultSet->FirstChildElement("Result");
+    auto WordList = Result->FirstChildElement("WordList");
+
+    for (auto el=WordList->FirstChildElement("Word");
+            el!=NULL; el=el->NextSiblingElement("Word")) {
+        auto Surface = el->FirstChildElement("Surface");
+        result.word_list.push_back(Surface->GetText());
+
+        auto Furigana = el->FirstChildElement("Furigana");
+        if (Furigana!=NULL)
+            result.furigana_list.insert(std::make_pair(Surface->GetText(), Furigana->GetText()));
+
+        auto Roman = el->FirstChildElement("Roman");
+        if (Roman!=NULL)
+            result.roman_list.insert(std::make_pair(Surface->GetText(), Roman->GetText()));
+
+        auto SubWordList = el->FirstChildElement("SubWordList");
+        if (SubWordList!=NULL) {
+            for (auto SubWord=SubWordList->FirstChildElement("SubWord");
+                    SubWord!=NULL; SubWord=SubWord->NextSiblingElement("SubWord")) {
+                auto Surface = el->FirstChildElement("Surface");
+                result.subword_list.push_back(Surface->GetText());
+
+                auto Furigana = el->FirstChildElement("Furigana");
+                if (Furigana!=NULL)
+                    result.furigana_list.insert(std::make_pair(Surface->GetText(), Furigana->GetText()));
+
+                auto Roman = el->FirstChildElement("Roman");
+                if (Roman!=NULL)
+                    result.roman_list.insert(std::make_pair(Surface->GetText(), Roman->GetText()));
+            }
+        }
     }
 
     return result;

@@ -33,8 +33,17 @@ class YAPIsCpp : public YAPIsCore
             std::map<std::string, std::vector<std::string> > candidate_list;
         };
 
+        // ルビ振りの結果
+        struct FuriganaResult {
+            std::vector<std::string> word_list;
+            std::vector<std::string> subword_list;
+            std::map<std::string, std::string> furigana_list;
+            std::map<std::string, std::string> roman_list;
+        };
+
         MAResult ma_post(std::string) const;
         JIMResult jim_post(std::string) const;
+        FuriganaResult furigana_post(std::string) const;
 };
 
 #endif

@@ -22,5 +22,12 @@ int main() {
             std::cout << el << std::endl;
         }
     }
+
+    YAPIsCpp::FuriganaResult res3 = yapis.furigana_post("今日は日曜日");
+    for (auto s : res3.word_list) {
+        std::cout << s << std::endl;
+        std::cout << res3.furigana_list[s] << std::endl;
+        std::cout << res3.roman_list[s] << std::endl;
+    }
     return 0;
 }
