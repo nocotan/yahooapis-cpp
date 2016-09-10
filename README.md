@@ -23,3 +23,22 @@ int main() {
     return 0;
 }
 ```
+
+Yahooかな漢字変換
+``
+#include "yapis_cpp.hpp"`
+#include <iostream>
+#include <vector>
+
+int main() {
+    YAPIsCpp yapis = YAPIsCpp("<Your APP ID>");
+    YAPIsCpp::JIMResult res = yapis.jim_post("おなかがすいた");
+    for (auto s : res.segment_list) {
+        std::cout << s << std::endl;
+
+        for (auto el : res.candidate_list[s]) {
+            std::cout << el <<std::endl;
+        }
+    }
+}
+```
