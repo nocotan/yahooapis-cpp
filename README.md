@@ -4,7 +4,8 @@ C/C++ Yahoo API Wrapper
 ##Usage
 
 Yahoo形態素解析
-```
+
+```example.cpp
 #include "yapis_cpp.hpp"
 #include <iostream>
 
@@ -25,6 +26,7 @@ int main() {
 ```
 
 Yahooかな漢字変換
+
 ```
 #include "yapis_cpp.hpp"`
 #include <iostream>
