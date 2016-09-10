@@ -57,5 +57,21 @@ int main() {
         }
     }
 }
-          
 ```
+
+校正支援
+
+```
+#include "yapis_cpp.hpp"
+
+int main() {
+    YAPIsCpp::KouseiResult res4 = yapis.kousei_post("遙か彼方に小形飛行機が見える");
+    for (auto s : res4.start_pos) {
+        std::cout << s << std::endl;
+        std::cout << res4.length[s] << std::endl;
+        std::cout << res4.surface[s] << std::endl;
+        std::cout << res4.shiteki_word[s] << std::endl;
+        std::cout << res4.shiteki_info[s] << std::endl;
+    }
+    return 0;
+}
