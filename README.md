@@ -1,4 +1,5 @@
 # yahooapis-cpp
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)  
 C/C++ Yahoo API Wrapper
 
 ##Usage
