@@ -7,7 +7,6 @@ Yahoo形態素解析
 
 ```
 #include "yapis_cpp.hpp"
-#include <iostream>
 
 int main() {
     YAPIsCpp yapis = YAPIsCpp("<Your APP ID>");
@@ -28,9 +27,7 @@ int main() {
 Yahooかな漢字変換
 
 ```
-#include "yapis_cpp.hpp"`
-#include <iostream>
-#include <vector>
+#include "yapis_cpp.hpp"
 
 int main() {
     YAPIsCpp yapis = YAPIsCpp("<Your APP ID>");
@@ -43,4 +40,22 @@ int main() {
         }
     }
 }
+```
+
+ルビ振り
+
+```
+#include "yapis_cpp.hpp"
+
+int main() {
+    YAPIsCpp yapis = YAPIsCpp("<Your APP ID>");
+    YAPIsCpp::FuriganaResult res3 = yapis.furigana_post("今日は日曜日");
+        for (auto s : res3.word_list) {
+             std::cout << s << std::endl;
+             std::cout << res3.furigana_list[s] << std::endl;
+             std::cout << res3.roman_list[s] << std::endl;
+        }
+    }
+}
+          
 ```
