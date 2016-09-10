@@ -25,7 +25,7 @@ int main() {
 ```
 
 Yahooかな漢字変換
-``
+```
 #include "yapis_cpp.hpp"`
 #include <iostream>
 #include <vector>
