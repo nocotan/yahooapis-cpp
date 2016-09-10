@@ -49,11 +49,11 @@ int main() {
 
 int main() {
     YAPIsCpp yapis = YAPIsCpp("<Your APP ID>");
-    YAPIsCpp::FuriganaResult res3 = yapis.furigana_post("今日は日曜日");
-        for (auto s : res3.word_list) {
+    YAPIsCpp::FuriganaResult res = yapis.furigana_post("今日は日曜日");
+        for (auto s : res.word_list) {
              std::cout << s << std::endl;
-             std::cout << res3.furigana_list[s] << std::endl;
-             std::cout << res3.roman_list[s] << std::endl;
+             std::cout << res.furigana_list[s] << std::endl;
+             std::cout << res.roman_list[s] << std::endl;
         }
     }
 }
