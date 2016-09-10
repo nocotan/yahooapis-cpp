@@ -15,5 +15,12 @@ int main() {
     }
 
     YAPIsCpp::JIMResult res2 = yapis.jim_post("おなかがすいた");
+    for (std::string s : res2.segment_list) {
+        std::cout << s << std::endl;
+        std::vector<std::string> candidate_list = res2.candidate_list[s];
+        for (auto el : candidate_list) {
+            std::cout << el << std::endl;
+        }
+    }
     return 0;
 }

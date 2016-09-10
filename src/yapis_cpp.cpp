@@ -113,7 +113,24 @@ YAPIsCpp::JIMResult YAPIsCpp::jim_post(std::string sentence) const
     XMLDocument doc;
     doc.Parse((const char*)chunk.c_str());
 
-    doc.Print();
+    auto ResultSet = doc.FirstChildElement("ResultSet");
+    auto Result = ResultSet->FirstChildElement("Result");
+    auto SegmentList = Result->FirstChildElement("SegmentList");
+
+
+    for (auto el=SegmentList->FirstChildElement("Segment");
+            el!=NULL; el=el->NextSiblingElement("Segment")) {
+        auto SegmentText = el->FirstChildElement("SegmentText");
+        result.segment_list.push_back(SegmentText->GetText());
+
+        auto CandidateList = el->FirstChildElement("CandidateList");
+        std::vector<std::string> candidate_list;
+        for (auto Candidate=CandidateList->FirstChildElement("Candidate");
+                Candidate!=NULL; Candidate=Candidate->NextSiblingElement("Candidate")) {
+            candidate_list.push_back(Candidate->GetText());
+        }
+        result.candidate_list.insert(std::make_pair(SegmentText->GetText(), candidate_list));
+    }
 
     return result;
 }
