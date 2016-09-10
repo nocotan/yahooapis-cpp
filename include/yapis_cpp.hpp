@@ -6,7 +6,6 @@
 
 class YAPIsCpp : public YAPIsCore
 {
-    private:
     public:
         YAPIsCpp(std::string);
 
@@ -47,8 +46,13 @@ class YAPIsCpp : public YAPIsCore
             std::map<std::string, std::string> roman_list;
         };
 
+        // 校正支援の結果
         struct KouseiResult {
-            std::vector<int> StartPos;
+            std::vector<int> start_pos;
+            std::map<int, int> length;
+            std::map<int, std::string> surface;
+            std::map<int, std::string> shiteki_word;
+            std::map<int, std::string> shiteki_info;
         };
 
         /**
@@ -57,6 +61,7 @@ class YAPIsCpp : public YAPIsCore
         MAResult ma_post(std::string) const;
         JIMResult jim_post(std::string) const;
         FuriganaResult furigana_post(std::string) const;
+        KouseiResult kousei_post(std::string) const;
 };
 
 #endif

@@ -1,22 +1,22 @@
 #include "../include/yapis_cpp.hpp"
 
+using namespace std;
+using namespace tinyxml2;
 #define XML_FOR(x,a,b) for(auto&& (x)=YAPIsCpp::get_element((a),(b));(x)!=NULL;(x)=YAPIsCpp::get_next((x),(b)))
 
-YAPIsCpp::YAPIsCpp(std::string APP_ID) : YAPIsCore(APP_ID)
+YAPIsCpp::YAPIsCpp(string APP_ID) : YAPIsCore(APP_ID)
 {
 }
 
-size_t YAPIsCpp::callbackWrite(char *ptr, size_t size, size_t nmemb, std::string *stream)
+size_t YAPIsCpp::callbackWrite(char *ptr, size_t size, size_t nmemb, string *stream)
 {
     int data_length = size * nmemb;
     stream->append(ptr, data_length);
     return data_length;
 }
 
-std::string YAPIsCpp::common_curl_setup(CURL *curl, std::string sentence, int type) const
+string YAPIsCpp::common_curl_setup(CURL *curl, string sentence, int type) const
 {
-    using namespace std;
-
     string url;
     string post_data;
     string chunk;
@@ -27,6 +27,7 @@ std::string YAPIsCpp::common_curl_setup(CURL *curl, std::string sentence, int ty
      * 0 => 形態素解析
      * 1 => ひらがな漢字変換
      * 2 => ルビ振り
+     * 3 => 校正支援
      */
     if (type==0) {
         url = YAPIsCore::get_maservice_url();
@@ -50,6 +51,13 @@ std::string YAPIsCpp::common_curl_setup(CURL *curl, std::string sentence, int ty
             + "&sentence="
             + sentence;
     }
+    else if (type==3) {
+        url = YAPIsCore::get_kouseiservice_url();
+        post_data = "appid="
+            + YAPIsCore::get_appid()
+            + "&sentence="
+            + sentence;
+    }
 
     // curlセットアップ
     if (curl) {
@@ -68,12 +76,12 @@ std::string YAPIsCpp::common_curl_setup(CURL *curl, std::string sentence, int ty
     return chunk;
 }
 
-tinyxml2::XMLElement* YAPIsCpp::get_element(tinyxml2::XMLElement* current, std::string el) const
+XMLElement* YAPIsCpp::get_element(XMLElement* current, string el) const
 {
     return current->FirstChildElement((const char*)el.c_str());
 }
 
-tinyxml2::XMLElement* YAPIsCpp::get_next(tinyxml2::XMLElement* current, std::string el) const
+XMLElement* YAPIsCpp::get_next(XMLElement* current, string el) const
 {
     return current->NextSiblingElement((const char*)el.c_str());
 }
@@ -81,11 +89,8 @@ tinyxml2::XMLElement* YAPIsCpp::get_next(tinyxml2::XMLElement* current, std::str
  * 形態素解析結果
  * @param std::string
  */
-YAPIsCpp::MAResult YAPIsCpp::ma_post(std::string sentence) const
+YAPIsCpp::MAResult YAPIsCpp::ma_post(string sentence) const
 {
-    using namespace tinyxml2;
-    using namespace std;
-
     CURL *curl;
     MAResult result;
 
@@ -133,11 +138,8 @@ YAPIsCpp::MAResult YAPIsCpp::ma_post(std::string sentence) const
  * かな漢字変換結果
  * @param std::string
  */
-YAPIsCpp::JIMResult YAPIsCpp::jim_post(std::string sentence) const
+YAPIsCpp::JIMResult YAPIsCpp::jim_post(string sentence) const
 {
-    using namespace tinyxml2;
-    using namespace std;
-
     CURL *curl;
     JIMResult result;
 
@@ -177,10 +179,8 @@ YAPIsCpp::JIMResult YAPIsCpp::jim_post(std::string sentence) const
  * ルビ振り結果
  * @param std::string
  */
-YAPIsCpp::FuriganaResult YAPIsCpp::furigana_post(std::string sentence) const
+YAPIsCpp::FuriganaResult YAPIsCpp::furigana_post(string sentence) const
 {
-    using namespace tinyxml2;
-    using namespace std;
 
     CURL *curl;
     FuriganaResult result;
@@ -214,20 +214,60 @@ YAPIsCpp::FuriganaResult YAPIsCpp::furigana_post(std::string sentence) const
 
         auto&& SubWordList = get_element(Word, "SubWordList");
         if (SubWordList!=NULL) {
-            for (auto&& SubWord=get_element(SubWordList, "SubWord");
-                    SubWord!=NULL; SubWord=get_next(SubWord, "SubWord")) {
+            XML_FOR(SubWord, SubWordList, "SubWord") {
                 auto&& Surface = get_element(SubWord, "Surface");
                 result.subword_list.push_back(Surface->GetText());
 
                 auto&& Furigana = get_element(SubWord, "Furigana");
                 if (Furigana!=NULL)
-                    result.furigana_list.insert(std::make_pair(Surface->GetText(), Furigana->GetText()));
+                    result.furigana_list.insert(make_pair(Surface->GetText(), Furigana->GetText()));
 
                 auto&& Roman = get_element(SubWord, "Roman");
                 if (Roman!=NULL)
                     result.roman_list.insert(make_pair(Surface->GetText(), Roman->GetText()));
             }
         }
+    }
+
+    return result;
+}
+
+/**
+ * 校正支援結果
+ * @param std::string
+ */
+YAPIsCpp::KouseiResult YAPIsCpp::kousei_post(string sentence) const
+{
+    CURL *curl;
+    KouseiResult result;
+
+    curl_global_init(CURL_GLOBAL_ALL);
+
+    curl = curl_easy_init();
+    string chunk = common_curl_setup(curl, sentence, 3);
+
+    curl_global_cleanup();
+
+    // xmlパース処理
+    XMLDocument doc;
+    doc.Parse((const char*)chunk.c_str());
+
+    auto&& ResultSet = doc.FirstChildElement("ResultSet");
+    XML_FOR(Result, ResultSet, "Result") {
+        auto&& StartPos = get_element(Result, "StartPos");
+        result.start_pos.push_back(stoi(StartPos->GetText()));
+
+        auto&& Length = get_element(Result, "Length");
+        result.length.insert(make_pair(stoi(StartPos->GetText()), stoi(Length->GetText())));
+
+        auto&& Surface = get_element(Result, "Surface");
+        result.surface.insert(make_pair(stoi(StartPos->GetText()), Surface->GetText()));
+
+        auto&& ShitekiWord = get_element(Result, "ShitekiWord");
+        result.shiteki_word.insert(make_pair(stoi(StartPos->GetText()), ShitekiWord->GetText()));
+
+        auto&& ShitekiInfo = get_element(Result, "ShitekiInfo");
+        result.shiteki_info.insert(make_pair(stoi(StartPos->GetText()), ShitekiInfo->GetText()));
     }
 
     return result;
